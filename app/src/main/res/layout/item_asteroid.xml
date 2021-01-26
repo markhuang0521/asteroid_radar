@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="asteroid"
+            type="com.udacity.asteroidradar.domain.Asteroid" />
+
+        <variable
+            name="clicker"
+            type="com.udacity.asteroidradar.main.AsteroidClickListener" />
+    </data>
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="3dp"
+        android:backgroundTint="@color/colorPrimary"
+        android:onClick="@{()->clicker.onClick(asteroid)}"
+        android:padding="3dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/code"
+
+                style="@style/TextAppearance.AppCompat.Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:text="@{asteroid.codename}"
+                android:textColor="@color/default_text_color"
+                tools:text="sadsadadas" />
+
+            <TextView
+                android:id="@+id/date"
+                style="@style/TextAppearance.AppCompat.Body1"
+                android:layout_width="wrap_content"
+
+                android:layout_height="wrap_content"
+                android:layout_below="@id/code"
+                android:layout_marginLeft="24dp"
+                android:layout_marginTop="2dp"
+                android:text="@{asteroid.closeApproachDate}"
+                android:textColor="@color/default_text_color"
+                tools:text="sadsadadas" />
+
+            <ImageView
+                statusIcon="@{asteroid.isPotentiallyHazardous}"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_margin="16dp"
+                tools:src="@drawable/ic_status_normal" />
+        </RelativeLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</layout>
