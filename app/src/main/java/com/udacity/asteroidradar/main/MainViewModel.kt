@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.udacity.asteroidradar.api.AsteroidOfDay
 import com.udacity.asteroidradar.api.Network
 import com.udacity.asteroidradar.api.parseAsteroidsJsonResult
 import com.udacity.asteroidradar.domain.Asteroid
@@ -30,24 +31,27 @@ class MainViewModel : ViewModel() {
     val asteroids: LiveData<List<Asteroid>>
         get() = _asteroidList
 
-    private val _navigateToDetail = MutableLiveData<Boolean>()
-    val navigateToDetail: LiveData<Boolean>
-        get() = _navigateToDetail
-    private val _curAsteroid = MutableLiveData<Asteroid>()
-    val curAsteroid: LiveData<Asteroid>
-        get() = _curAsteroid
+
+    private val _selectedAsteroid = MutableLiveData<Asteroid>()
+    val selectedAsteroid: LiveData<Asteroid>
+        get() = _selectedAsteroid
+
+    private val _asteroidOfDay = MutableLiveData<AsteroidOfDay?>()
+    val asteroidOfDay: LiveData<AsteroidOfDay?>
+        get() = _asteroidOfDay
 
 
     init {
-        getAsteroidFromApi()
+        getAsteroidList()
+        getAsteroidOfDay()
     }
 
     fun onSelectAsteroid(asteroid: Asteroid) {
-        _curAsteroid.value = asteroid
+        _selectedAsteroid.value = asteroid
     }
 
     fun unSelectAsteroid() {
-        _curAsteroid.value = null
+        _selectedAsteroid.value = null
     }
 
 
@@ -60,20 +64,36 @@ class MainViewModel : ViewModel() {
     }
 
     fun refresh() {
-        getAsteroidFromApi()
+        getAsteroidList()
     }
 
 
-    fun navigateToDetail() {
-        _navigateToDetail.value = true
+//    fun navigateToDetail() {
+//        _navigateToDetail.value = true
+//    }
+//
+//    fun doneNavigateToDetail() {
+//        _navigateToDetail.value = null
+//    }
+
+    private fun getAsteroidOfDay() {
+        viewModelScope.launch {
+            try {
+                val asteroid = Network.retrofitService.getAsteroidOfDay()
+                _asteroidOfDay.value = asteroid
+
+            } catch (t: Throwable) {
+                _asteroidOfDay.value = AsteroidOfDay()
+                Timber.i(t.localizedMessage)
+
+            }
+
+        }
+
+
     }
 
-    fun doneNavigateToDetail() {
-        _navigateToDetail.value = null
-    }
-
-
-    private fun getAsteroidFromApi() {
+    private fun getAsteroidList() {
         viewModelScope.launch {
             _status.value = ApiStatus.LOADING
             try {

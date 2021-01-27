@@ -35,7 +35,7 @@ interface AsteroidService {
     @JsonAno
     suspend fun getAsteroidOfDay(
         @Query("api_key") apiKey: String = BuildConfig.API_KEY
-    ): Asteroid
+    ): AsteroidOfDay
 
 }
 

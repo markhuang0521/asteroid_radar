@@ -7,6 +7,7 @@ import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import com.udacity.asteroidradar.R
+import com.udacity.asteroidradar.api.AsteroidOfDay
 import com.udacity.asteroidradar.domain.Asteroid
 import com.udacity.asteroidradar.main.ApiStatus
 import com.udacity.asteroidradar.main.MainRecyclerAdapter
@@ -47,6 +48,18 @@ fun bindAsteroidStatusImage(imageView: ImageView, isHazardous: Boolean) {
     } else {
         imageView.setImageResource(R.drawable.ic_status_normal)
     }
+}
+
+@BindingAdapter("imageUrl")
+fun bindMainImageOfDay(imageView: ImageView, asteroidOfDay: AsteroidOfDay?) {
+    asteroidOfDay?.let {
+        Picasso.with(imageView.context)
+            .load(asteroidOfDay.url)
+            .placeholder(R.drawable.ic_connection_error)
+            .into(imageView)
+    }
+
+
 }
 
 @BindingAdapter("asteroidStatusImage")
