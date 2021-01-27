@@ -1,4 +1,4 @@
-package com.udacity.asteroidradar
+package com.udacity.asteroidradar.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
@@ -6,6 +6,6 @@ import com.udacity.asteroidradar.domain.Asteroid
 
 
 @Database(entities = [Asteroid::class], version = 1)
-class database() : RoomDatabase() {
+abstract class database() : RoomDatabase() {
 
 }
