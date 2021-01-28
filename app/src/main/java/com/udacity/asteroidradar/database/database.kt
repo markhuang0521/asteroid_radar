@@ -4,12 +4,16 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.udacity.asteroidradar.domain.Asteroid
+import androidx.room.TypeConverters
+import com.udacity.asteroidradar.util.Converters
 
 
-@Database(entities = [Asteroid::class], version = 1)
+@Database(entities = [DbAsteroid::class, DbPictureOfDay::class], version = 7)
+@TypeConverters(Converters::class)
+
 abstract class AsteroidDatabase : RoomDatabase() {
     abstract val asteroidDao: AsteroidDao
+    abstract val picOfDayDao: PicOfDayDao
 
 
 }
@@ -22,8 +26,9 @@ fun getDatabase(context: Context): AsteroidDatabase {
             INSTANCE = Room.databaseBuilder(
                 context.applicationContext,
                 AsteroidDatabase::class.java,
-                "videos"
-            ).build()
+                "asteroids"
+            ).fallbackToDestructiveMigration()
+                .build()
         }
     }
     return INSTANCE

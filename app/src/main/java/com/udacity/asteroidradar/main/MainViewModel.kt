@@ -1,22 +1,51 @@
 package com.udacity.asteroidradar.main
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.udacity.asteroidradar.api.AsteroidOfDay
-import com.udacity.asteroidradar.api.Network
-import com.udacity.asteroidradar.api.parseAsteroidsJsonResult
+import android.app.Application
+import androidx.lifecycle.*
+import com.udacity.asteroidradar.Repository.AsteroidRepo
+import com.udacity.asteroidradar.database.getDatabase
 import com.udacity.asteroidradar.domain.Asteroid
-import com.udacity.asteroidradar.util.Constants
+import com.udacity.asteroidradar.domain.PictureOfDay
 import kotlinx.coroutines.launch
-import org.json.JSONObject
 import timber.log.Timber
 
 
 enum class ApiStatus { LOADING, DONE, ERROR }
 
-class MainViewModel : ViewModel() {
+
+class MainViewModelFactory(val application: Application) : ViewModelProvider.Factory {
+    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
+            return MainViewModel(application) as T
+        }
+        throw IllegalArgumentException("Unable to construct viewModel")
+
+    }
+}
+
+
+class MainViewModel(application: Application) : AndroidViewModel(application) {
+//    private val _asteroidList = MutableLiveData<List<Asteroid>>()
+//
+//    // The external LiveData interface to the property is immutable, so only this class can modify
+//    val asteroids: LiveData<List<Asteroid>>
+//        get() = _asteroidList
+
+    // fetching data using repo pattern
+    private val db = getDatabase(application)
+    private val repo = AsteroidRepo(db)
+
+    val asteroids = repo.asteroids
+    val picOfDay = repo.picOfDay
+
+    init {
+
+        refresh()
+
+        Timber.i(picOfDay.toString())
+
+    }
+
 
     private val _status = MutableLiveData<ApiStatus>()
     val status: LiveData<ApiStatus>
@@ -25,26 +54,11 @@ class MainViewModel : ViewModel() {
     val refresh: LiveData<Boolean>
         get() = _refresh
 
-    private val _asteroidList = MutableLiveData<List<Asteroid>>()
-
-    // The external LiveData interface to the property is immutable, so only this class can modify
-    val asteroids: LiveData<List<Asteroid>>
-        get() = _asteroidList
-
 
     private val _selectedAsteroid = MutableLiveData<Asteroid>()
     val selectedAsteroid: LiveData<Asteroid>
         get() = _selectedAsteroid
 
-    private val _asteroidOfDay = MutableLiveData<AsteroidOfDay?>()
-    val asteroidOfDay: LiveData<AsteroidOfDay?>
-        get() = _asteroidOfDay
-
-
-    init {
-        getAsteroidList()
-        getAsteroidOfDay()
-    }
 
     fun onSelectAsteroid(asteroid: Asteroid) {
         _selectedAsteroid.value = asteroid
@@ -64,8 +78,15 @@ class MainViewModel : ViewModel() {
     }
 
     fun refresh() {
-        getAsteroidList()
+        viewModelScope.launch {
+            repo.refreshAsteroids()
+            repo.refreshPicOfDay()
+        }
     }
+    fun viewTodayAsteroid(){
+
+    }
+
 
 
 //    fun navigateToDetail() {
@@ -76,43 +97,28 @@ class MainViewModel : ViewModel() {
 //        _navigateToDetail.value = null
 //    }
 
-    private fun getAsteroidOfDay() {
-        viewModelScope.launch {
-            try {
-                val asteroid = Network.retrofitService.getAsteroidOfDay()
-                _asteroidOfDay.value = asteroid
 
-            } catch (t: Throwable) {
-                _asteroidOfDay.value = AsteroidOfDay()
-                Timber.i(t.localizedMessage)
-
-            }
-
-        }
-
-
-    }
-
-    private fun getAsteroidList() {
-        viewModelScope.launch {
-            _status.value = ApiStatus.LOADING
-            try {
-                val asteroidStrings =
-                    Network.retrofitService.getAsteroidList(Constants.startDay, Constants.endDay)
-
-
-                val asteroidList = parseAsteroidsJsonResult(JSONObject(asteroidStrings))
-                _asteroidList.value = asteroidList
-                _status.value = ApiStatus.DONE
-
-
-            } catch (t: Throwable) {
-                Timber.i(t.localizedMessage)
-                _status.value = ApiStatus.ERROR
-                _asteroidList.value = listOf()
-            }
-        }
-    }
+    // fetching data from api using retrofit
+//    private fun getAsteroidList() {
+//        viewModelScope.launch {
+//            _status.value = ApiStatus.LOADING
+//            try {
+//                val asteroidStrings =
+//                    Network.retrofitService.getAsteroidList(Constants.startDay, Constants.endDay)
+//
+//
+//                val asteroidList = parseAsteroidsJsonResult(JSONObject(asteroidStrings))
+//                _asteroidList.value = asteroidList
+//                _status.value = ApiStatus.DONE
+//
+//
+//            } catch (t: Throwable) {
+//                Timber.i(t.localizedMessage)
+//                _status.value = ApiStatus.ERROR
+//                _asteroidList.value = listOf()
+//            }
+//        }
+//    }
 
 
 }

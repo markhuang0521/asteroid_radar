@@ -19,6 +19,8 @@ data class DbAsteroid(
 
 )
 
+
+//changing from dbmodel to domain
 fun List<DbAsteroid>.asDomain(): List<Asteroid> {
     return this.map {
         Asteroid(
