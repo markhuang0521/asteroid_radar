@@ -1,5 +1,6 @@
 package com.udacity.asteroidradar.main
 
+import android.annotation.SuppressLint
 import android.app.Application
 import androidx.lifecycle.*
 import com.udacity.asteroidradar.Repository.AsteroidRepo
@@ -34,18 +35,50 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val db = getDatabase(application)
     private val repo = AsteroidRepo(db)
 
+    private val _asteroids = MutableLiveData<List<Asteroid>>(repo.weeklyAsteroids.value)
+    val today = repo.todayAsteroids
+    val week = repo.weeklyAsteroids
+    val save = repo.savedAsteroids
+    var asteroids = repo.weeklyAsteroids
 
-    private val _asteroids = repo.asteroids as MutableLiveData
-    var asteroids = repo.asteroids
     val picOfDay = repo.picOfDay
 
     init {
         refresh()
-        Timber.i(picOfDay.toString())
+        Timber.i("today" + today.value.toString())
+        Timber.i("week" + week.value.toString())
+        Timber.i("save" + save.value.toString())
+
+
+        Timber.i("pic" + picOfDay.toString())
+    }
+
+    fun refresh() {
+        viewModelScope.launch {
+            repo.refreshPicOfDay()
+            repo.refreshAsteroids()
+        }
     }
 
     fun getTodayAsteroid() {
         asteroids = repo.todayAsteroids
+        Timber.i("today" + repo.todayAsteroids.value.toString())
+    }
+
+    fun getSavedAsteroid() {
+//        _asteroids.value = save.value
+        asteroids = repo.savedAsteroids
+
+        Timber.i("save" + repo.savedAsteroids.value.toString())
+
+    }
+
+    fun getWeeklyAsteroid() {
+//        _asteroids.value = week.value
+        asteroids = repo.weeklyAsteroids
+
+        Timber.i("week" + repo.weeklyAsteroids.value.toString())
+
     }
 
     private val _status = MutableLiveData<ApiStatus>()
@@ -78,12 +111,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         _refresh.value = false
     }
 
-    fun refresh() {
-        viewModelScope.launch {
-            repo.refreshAsteroids()
-            repo.refreshPicOfDay()
-        }
-    }
 
     fun viewTodayAsteroid() {
 

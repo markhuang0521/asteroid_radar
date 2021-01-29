@@ -2,6 +2,7 @@ package com.udacity.asteroidradar.main
 
 import android.os.Bundle
 import android.view.*
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
@@ -33,11 +34,18 @@ class MainFragment : Fragment() {
         binding.lifecycleOwner = this
 
         binding.viewModel = viewModel
-        binding.asteroidRecycler.adapter =
+        val adapter =
             MainRecyclerAdapter(AsteroidClickListener {
                 viewModel.onSelectAsteroid(it)
             })
+        binding.asteroidRecycler.adapter = adapter
 
+
+        viewModel.asteroids.observe(viewLifecycleOwner, Observer {
+            it?.let {
+                adapter.submitList(it)
+            }
+        })
 
         viewModel.selectedAsteroid.observe(
             viewLifecycleOwner, Observer
@@ -73,13 +81,18 @@ class MainFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.menu_week_asteroid -> {
-                viewModel.refresh()
+                Toast.makeText(activity, "menu_week_asteroid", Toast.LENGTH_SHORT).show()
+                viewModel.getWeeklyAsteroid()
             }
             R.id.menu_today_asteroid -> {
+                Toast.makeText(activity, "menu_today_asteroid", Toast.LENGTH_SHORT).show()
+
                 viewModel.getTodayAsteroid()
             }
             R.id.menu_save_asteroid -> {
-                viewModel.refresh()
+                Toast.makeText(activity, "menu_save_asteroid", Toast.LENGTH_SHORT).show()
+
+                viewModel.getSavedAsteroid()
             }
         }
         return true

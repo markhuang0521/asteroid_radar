@@ -2,6 +2,7 @@ package com.udacity.asteroidradar.domain
 
 import android.os.Parcelable
 import com.udacity.asteroidradar.database.DbAsteroid
+import com.udacity.asteroidradar.util.formatStringToTimeStamp
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
@@ -13,19 +14,19 @@ data class Asteroid(
 ) : Parcelable
 
 
-
 // changing from domain to dbmodel
 fun List<Asteroid>.asDbModel(): Array<DbAsteroid> {
     return this.map {
+        val dateLong = formatStringToTimeStamp(it.closeApproachDate)
         DbAsteroid(
-            it.id,
-            it.codename,
-            it.closeApproachDate,
-            it.absoluteMagnitude,
-            it.estimatedDiameter,
-            it.relativeVelocity,
-            it.distanceFromEarth,
-            it.isPotentiallyHazardous
+            id = it.id,
+            codename = it.codename,
+            closeApproachDate = dateLong,
+            absoluteMagnitude = it.absoluteMagnitude,
+            estimatedDiameter = it.estimatedDiameter,
+            relativeVelocity = it.relativeVelocity,
+            distanceFromEarth = it.distanceFromEarth,
+            isPotentiallyHazardous = it.isPotentiallyHazardous
         )
     }.toTypedArray()
 }

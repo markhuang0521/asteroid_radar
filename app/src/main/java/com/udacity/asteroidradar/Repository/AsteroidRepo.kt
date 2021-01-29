@@ -1,5 +1,6 @@
 package com.udacity.asteroidradar.Repository
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
 import com.udacity.asteroidradar.api.Network
 import com.udacity.asteroidradar.api.asDatabaseModel
@@ -17,9 +18,13 @@ import timber.log.Timber
 
 class AsteroidRepo(private val db: AsteroidDatabase) {
 
-    val asteroids = Transformations.map(db.asteroidDao.getSavedAsteroid()) { it.asDomain() }
-    val todayAsteroids = Transformations.map(db.asteroidDao.getTodayAsteroid()) { it.asDomain() }
-    val picOfDay = Transformations.map(db.picOfDayDao.getPictureOfDay()) { it.asDomain() }
+    val savedAsteroids: LiveData<List<Asteroid>> =
+        Transformations.map(db.asteroidDao.getSavedAsteroid()) { it.asDomain() }
+    val todayAsteroids: LiveData<List<Asteroid>> =
+        Transformations.map(db.asteroidDao.getTodayAsteroid()) { it.asDomain() }
+    val weeklyAsteroids: LiveData<List<Asteroid>> =
+        Transformations.map(db.asteroidDao.getWeeklyAsteroid()) { it.asDomain() }
+    val picOfDay = Transformations.map(db.asteroidDao.getPictureOfDay()) { it.asDomain() }
 
 
     suspend fun refreshPicOfDay() {
@@ -27,11 +32,11 @@ class AsteroidRepo(private val db: AsteroidDatabase) {
 
             withContext(Dispatchers.IO) {
                 val pictureOfDay = Network.retrofitService.getpicOfDay()
-                val text = pictureOfDay.asDatabaseModel()
-                db.picOfDayDao.insert(text)
+                val test = pictureOfDay.asDatabaseModel()
+                db.asteroidDao.insert(test)
             }
-        } catch (e: Exception) {
-            Timber.i(e.localizedMessage)
+        } catch (t: Throwable) {
+            Timber.i(t.localizedMessage)
 
         }
     }

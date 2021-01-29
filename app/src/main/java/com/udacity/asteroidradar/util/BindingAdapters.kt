@@ -36,11 +36,11 @@ fun bindstatus(imgView: ImageView, status: ApiStatus?) {
 
 }
 
-@BindingAdapter("listData")
-fun bindRecyclerView(recyclerView: RecyclerView, data: List<Asteroid>?) {
-    val adapter = recyclerView.adapter as MainRecyclerAdapter
-    adapter.submitList(data)
-}
+//@BindingAdapter("listData")
+//fun bindRecyclerView(recyclerView: RecyclerView, data: List<Asteroid>?) {
+//    val adapter = recyclerView.adapter as MainRecyclerAdapter
+//    adapter.submitList(data)
+//}
 
 @BindingAdapter("statusIcon")
 fun bindAsteroidStatusImage(imageView: ImageView, isHazardous: Boolean) {

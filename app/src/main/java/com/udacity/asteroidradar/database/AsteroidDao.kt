@@ -13,14 +13,26 @@ import com.udacity.asteroidradar.util.Constants
 interface AsteroidDao {
 
 
-    @Query("SELECT * FROM tb_asteroid")
+    @Query("SELECT * FROM tb_asteroid ORDER BY closeApproachDate")
     fun getSavedAsteroid(): LiveData<List<DbAsteroid>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(vararg asteroid: DbAsteroid)
 
-    @Query("SELECT * FROM tb_asteroid where closeApproachDate=:date")
-    fun getTodayAsteroid(date: String = Constants.today): LiveData<List<DbAsteroid>>
+    @Query("SELECT * FROM tb_asteroid where closeApproachDate=:today ORDER BY closeApproachDate")
+    fun getTodayAsteroid(today: Long = Constants.todayLong): LiveData<List<DbAsteroid>>
+
+    @Query("SELECT * FROM tb_asteroid where closeApproachDate BETWEEN :today AND :endDate ORDER BY closeApproachDate")
+    fun getWeeklyAsteroid(
+        today: Long = Constants.todayLong,
+        endDate: Long = Constants.endDayLong
+    ): LiveData<List<DbAsteroid>>
 
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(pic: DbPictureOfDay)
+
+    @Query("SELECT * from tb_pictureOfDay ORDER BY date DESC LIMIT 1 ")
+    // should a single object need to be live data as well?
+    fun getPictureOfDay(): LiveData<DbPictureOfDay>
 }

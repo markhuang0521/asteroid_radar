@@ -3,13 +3,15 @@ package com.udacity.asteroidradar.database
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.udacity.asteroidradar.domain.Asteroid
+import com.udacity.asteroidradar.util.formatTimeStampToString
 
 
 @Entity(tableName = "tb_asteroid")
 data class DbAsteroid(
+    @PrimaryKey
     val id: Long,
     val codename: String,
-    val closeApproachDate: String,
+    val closeApproachDate: Long,
     val absoluteMagnitude: Double,
     val estimatedDiameter: Double,
     val relativeVelocity: Double,
@@ -22,10 +24,11 @@ data class DbAsteroid(
 //changing from dbmodel to domain
 fun List<DbAsteroid>.asDomain(): List<Asteroid> {
     return this.map {
+        val dateString = formatTimeStampToString(it.closeApproachDate)
         Asteroid(
             it.id,
             it.codename,
-            it.closeApproachDate,
+            dateString,
             it.absoluteMagnitude,
             it.estimatedDiameter,
             it.relativeVelocity,

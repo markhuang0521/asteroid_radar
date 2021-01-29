@@ -8,8 +8,7 @@ import androidx.room.TypeConverters
 import com.udacity.asteroidradar.util.Converters
 
 
-@Database(entities = [DbAsteroid::class, DbPictureOfDay::class], version = 7)
-@TypeConverters(Converters::class)
+@Database(entities = [DbAsteroid::class, DbPictureOfDay::class], version = 10, exportSchema = false)
 
 abstract class AsteroidDatabase : RoomDatabase() {
     abstract val asteroidDao: AsteroidDao
