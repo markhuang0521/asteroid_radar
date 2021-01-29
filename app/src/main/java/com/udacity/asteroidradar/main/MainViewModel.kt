@@ -5,7 +5,6 @@ import androidx.lifecycle.*
 import com.udacity.asteroidradar.Repository.AsteroidRepo
 import com.udacity.asteroidradar.database.getDatabase
 import com.udacity.asteroidradar.domain.Asteroid
-import com.udacity.asteroidradar.domain.PictureOfDay
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -35,17 +34,19 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val db = getDatabase(application)
     private val repo = AsteroidRepo(db)
 
-    val asteroids = repo.asteroids
+
+    private val _asteroids = repo.asteroids as MutableLiveData
+    var asteroids = repo.asteroids
     val picOfDay = repo.picOfDay
 
     init {
-
         refresh()
-
         Timber.i(picOfDay.toString())
-
     }
 
+    fun getTodayAsteroid() {
+        asteroids = repo.todayAsteroids
+    }
 
     private val _status = MutableLiveData<ApiStatus>()
     val status: LiveData<ApiStatus>
@@ -83,10 +84,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             repo.refreshPicOfDay()
         }
     }
-    fun viewTodayAsteroid(){
+
+    fun viewTodayAsteroid() {
 
     }
-
 
 
 //    fun navigateToDetail() {

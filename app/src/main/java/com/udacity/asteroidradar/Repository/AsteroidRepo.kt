@@ -18,6 +18,7 @@ import timber.log.Timber
 class AsteroidRepo(private val db: AsteroidDatabase) {
 
     val asteroids = Transformations.map(db.asteroidDao.getSavedAsteroid()) { it.asDomain() }
+    val todayAsteroids = Transformations.map(db.asteroidDao.getTodayAsteroid()) { it.asDomain() }
     val picOfDay = Transformations.map(db.picOfDayDao.getPictureOfDay()) { it.asDomain() }
 
 

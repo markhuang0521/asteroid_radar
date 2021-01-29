@@ -18,7 +18,7 @@ interface AsteroidService {
     @GET("neo/rest/v1/feed")
     @StringAno
     suspend fun getAsteroidList(
-        @Query("start_date") startDate: String = Constants.startDay,
+        @Query("start_date") startDate: String = Constants.today,
         @Query("end_date") endDate: String = Constants.endDay,
         @Query("api_key") apiKey: String = BuildConfig.API_KEY
     ): String

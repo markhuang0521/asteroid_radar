@@ -26,7 +26,7 @@ object Constants {
     const val BASE_URL = "https://api.nasa.gov/"
 
 
-    val startDay = Calendar.getInstance().time.formatToString(API_QUERY_DATE_FORMAT)
+    val today = Calendar.getInstance().time.formatToString(API_QUERY_DATE_FORMAT)
     val endDay = getDaysAfter(7).formatToString(API_QUERY_DATE_FORMAT)
 
 
