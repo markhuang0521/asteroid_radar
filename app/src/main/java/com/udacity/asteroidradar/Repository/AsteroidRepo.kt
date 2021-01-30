@@ -24,7 +24,7 @@ class AsteroidRepo(private val db: AsteroidDatabase) {
         Transformations.map(db.asteroidDao.getTodayAsteroid()) { it.asDomain() }
     val weeklyAsteroids: LiveData<List<Asteroid>> =
         Transformations.map(db.asteroidDao.getWeeklyAsteroid()) { it.asDomain() }
-    val picOfDay = Transformations.map(db.asteroidDao.getPictureOfDay()) { it.asDomain() }
+    val picOfDay = Transformations.map(db.picOfDayDao.getPictureOfDay()) { it?.asDomain() }
 
 
     suspend fun refreshPicOfDay() {
@@ -33,7 +33,7 @@ class AsteroidRepo(private val db: AsteroidDatabase) {
             withContext(Dispatchers.IO) {
                 val pictureOfDay = Network.retrofitService.getpicOfDay()
                 val test = pictureOfDay.asDatabaseModel()
-                db.asteroidDao.insert(test)
+                db.picOfDayDao.insert(test)
             }
         } catch (t: Throwable) {
             Timber.i(t.localizedMessage)

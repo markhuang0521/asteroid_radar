@@ -11,6 +11,7 @@ import timber.log.Timber
 
 
 enum class ApiStatus { LOADING, DONE, ERROR }
+enum class AsteroidOption { TODAY, WEEK, SAVED }
 
 
 class MainViewModelFactory(val application: Application) : ViewModelProvider.Factory {
@@ -39,7 +40,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val today = repo.todayAsteroids
     val week = repo.weeklyAsteroids
     val save = repo.savedAsteroids
-    var asteroids = repo.weeklyAsteroids
+    var asteroids = repo.todayAsteroids
 
     val picOfDay = repo.picOfDay
 
@@ -62,6 +63,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun getTodayAsteroid() {
         asteroids = repo.todayAsteroids
+
+//        _asteroids.value = repo.todayAsteroids.value
         Timber.i("today" + repo.todayAsteroids.value.toString())
     }
 
@@ -74,8 +77,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun getWeeklyAsteroid() {
-//        _asteroids.value = week.value
-        asteroids = repo.weeklyAsteroids
+        asteroids = repo.savedAsteroids
+//        _asteroids.value = repo.weeklyAsteroids.value
 
         Timber.i("week" + repo.weeklyAsteroids.value.toString())
 

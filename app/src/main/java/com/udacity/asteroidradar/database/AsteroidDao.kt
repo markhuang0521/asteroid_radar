@@ -29,10 +29,4 @@ interface AsteroidDao {
     ): LiveData<List<DbAsteroid>>
 
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(pic: DbPictureOfDay)
-
-    @Query("SELECT * from tb_pictureOfDay ORDER BY date DESC LIMIT 1 ")
-    // should a single object need to be live data as well?
-    fun getPictureOfDay(): LiveData<DbPictureOfDay>
 }
