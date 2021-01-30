@@ -34,18 +34,27 @@ class MainFragment : Fragment() {
         binding.lifecycleOwner = this
 
         binding.viewModel = viewModel
-        val adapter =
+        binding.asteroidRecycler.adapter =
             MainRecyclerAdapter(AsteroidClickListener {
                 viewModel.onSelectAsteroid(it)
             })
-        binding.asteroidRecycler.adapter = adapter
 
 
-        viewModel.asteroids.observe(viewLifecycleOwner, Observer {
-            it?.let {
-                adapter.submitList(it)
+        // my naive way to perform swipe refresh, please suggest a better way to do this in kotlin. thanks
+        viewModel.refresh.observe(viewLifecycleOwner, Observer
+        {
+            if (it) {
+                viewModel.refresh()
+                viewModel.onReady()
             }
         })
+
+
+//        viewModel.asteroids.observe(viewLifecycleOwner, Observer {
+//            it?.let {
+//                adapter.submitList(it)
+//            }
+//        })
 
         viewModel.selectedAsteroid.observe(
             viewLifecycleOwner, Observer
@@ -58,14 +67,6 @@ class MainFragment : Fragment() {
 
             })
 
-        // my naive way to perform swipe refresh, please suggest a better way to do this in kotlin. thanks
-        viewModel.refresh.observe(viewLifecycleOwner, Observer
-        {
-            if (it) {
-                viewModel.refresh()
-                viewModel.onReady()
-            }
-        })
 
 
         setHasOptionsMenu(true)
@@ -82,17 +83,17 @@ class MainFragment : Fragment() {
         when (item.itemId) {
             R.id.menu_week_asteroid -> {
                 Toast.makeText(activity, "menu_week_asteroid", Toast.LENGTH_SHORT).show()
-                viewModel.getWeeklyAsteroid()
+                viewModel.setWeekOption()
             }
             R.id.menu_today_asteroid -> {
                 Toast.makeText(activity, "menu_today_asteroid", Toast.LENGTH_SHORT).show()
 
-                viewModel.getTodayAsteroid()
+                viewModel.setTodayOption()
             }
             R.id.menu_save_asteroid -> {
                 Toast.makeText(activity, "menu_save_asteroid", Toast.LENGTH_SHORT).show()
 
-                viewModel.getSavedAsteroid()
+                viewModel.setSaveOption()
             }
         }
         return true

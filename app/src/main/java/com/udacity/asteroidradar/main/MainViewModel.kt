@@ -26,32 +26,48 @@ class MainViewModelFactory(val application: Application) : ViewModelProvider.Fac
 
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
-//    private val _asteroidList = MutableLiveData<List<Asteroid>>()
-//
-//    // The external LiveData interface to the property is immutable, so only this class can modify
-//    val asteroids: LiveData<List<Asteroid>>
-//        get() = _asteroidList
+
 
     // fetching data using repo pattern
     private val db = getDatabase(application)
     private val repo = AsteroidRepo(db)
 
-    private val _asteroids = MutableLiveData<List<Asteroid>>(repo.weeklyAsteroids.value)
-    val today = repo.todayAsteroids
-    val week = repo.weeklyAsteroids
-    val save = repo.savedAsteroids
-    var asteroids = repo.todayAsteroids
+    private val _option = MutableLiveData<AsteroidOption>(AsteroidOption.TODAY)
 
+    // not sure if this is the proper way to update live data from repo, but it works alright to update the UI.
+    // please suggest other ways to update livedata from repo
+    var asteroids = Transformations.switchMap(_option)
+    {
+        when (it) {
+            AsteroidOption.SAVED -> repo.savedAsteroids
+            AsteroidOption.TODAY -> repo.todayAsteroids
+            AsteroidOption.WEEK -> repo.weeklyAsteroids
+            else -> repo.todayAsteroids
+
+        }
+    }
+
+    //  not sure why pod is null from the repo when there are data in the room.
+    // it has the same implementation as asteroid, but it was still initialized as null need more  clarification
     val picOfDay = repo.picOfDay
 
+    fun setTodayOption() {
+        _option.value = AsteroidOption.TODAY
+    }
+
+    fun setWeekOption() {
+        _option.value = AsteroidOption.WEEK
+    }
+
+    fun setSaveOption() {
+        _option.value = AsteroidOption.SAVED
+    }
+
+
     init {
+        //I can't initialize the api status as the api call is coming from repo.
+        //please suggest how to I implement the loading icon
         refresh()
-        Timber.i("today" + today.value.toString())
-        Timber.i("week" + week.value.toString())
-        Timber.i("save" + save.value.toString())
-
-
-        Timber.i("pic" + picOfDay.toString())
     }
 
     fun refresh() {
@@ -61,32 +77,36 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun getTodayAsteroid() {
-        asteroids = repo.todayAsteroids
 
-//        _asteroids.value = repo.todayAsteroids.value
-        Timber.i("today" + repo.todayAsteroids.value.toString())
-    }
-
-    fun getSavedAsteroid() {
-//        _asteroids.value = save.value
-        asteroids = repo.savedAsteroids
-
-        Timber.i("save" + repo.savedAsteroids.value.toString())
-
-    }
-
-    fun getWeeklyAsteroid() {
-        asteroids = repo.savedAsteroids
-//        _asteroids.value = repo.weeklyAsteroids.value
-
-        Timber.i("week" + repo.weeklyAsteroids.value.toString())
-
-    }
+    // bad attends to update adapter livedata using repo.
+    //please provide more info for  better understanding
+//        fun getTodayAsteroid() {
+//            asteroids = repo.todayAsteroids
+//
+////        _asteroids.value = repo.todayAsteroids.value
+//            Timber.i("today" + repo.todayAsteroids.value.toString())
+//        }
+//
+//        fun getSavedAsteroid() {
+////        _asteroids.value = save.value
+//            asteroids = repo.savedAsteroids
+//
+//            Timber.i("save" + repo.savedAsteroids.value.toString())
+//
+//        }
+//
+//        fun getWeeklyAsteroid() {
+//            asteroids = repo.savedAsteroids
+////        _asteroids.value = repo.weeklyAsteroids.value
+//
+//            Timber.i("week" + repo.weeklyAsteroids.value.toString())
+//
+//        }
 
     private val _status = MutableLiveData<ApiStatus>()
     val status: LiveData<ApiStatus>
         get() = _status
+
     private val _refresh = MutableLiveData<Boolean>()
     val refresh: LiveData<Boolean>
         get() = _refresh
@@ -113,20 +133,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun onReady() {
         _refresh.value = false
     }
-
-
-    fun viewTodayAsteroid() {
-
-    }
-
-
-//    fun navigateToDetail() {
-//        _navigateToDetail.value = true
-//    }
-//
-//    fun doneNavigateToDetail() {
-//        _navigateToDetail.value = null
-//    }
 
 
     // fetching data from api using retrofit
