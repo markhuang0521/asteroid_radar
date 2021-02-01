@@ -15,9 +15,9 @@ android {
         javaCompileOptions {
             annotationProcessorOptions {
                 arguments = [
-                        "room.schemaLocation":"$projectDir/schemas".toString(),
-                        "room.incremental":"true",
-                        "room.expandProjection":"true"]
+                        "room.schemaLocation"  : "$projectDir/schemas".toString(),
+                        "room.incremental"     : "true",
+                        "room.expandProjection": "true"]
             }
         }
         applicationId "com.udacity.asteroidradar"
@@ -85,8 +85,8 @@ dependencies {
     kapt "androidx.room:room-compiler:2.2.3"
     implementation "androidx.room:room-ktx:2.2.3"
 
-
-    implementation "android.arch.work:work-runtime-ktx:1.0.1"
+    def work_version = "2.5.0"
+    implementation "androidx.work:work-runtime-ktx:$work_version"
 
     // Logging
     implementation "com.jakewharton.timber:timber:4.7.1"
